@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="http://unpkg.com/tone"></script>
+</head>
+<body>
+   <h2>
+    Thank you for connecting. Don't close this page in your browser. You can switch off your screen so far. The performance will start soon.
+   </h2>
+  <div id="olga" style="background-color: black; color: aliceblue; position: absolute; visibility: hidden;">   
+        <h2>Olga says:</h2> 
+  <p>Okay, I am sure that almost everyone here has a person with whom she or he once lost the connection. 
+    <br>
+    Now you can open the page you opened in the very beginning. 
+    <br>
+    You have a chance to send any message to this person or just their names</p>
+    <button onclick="window.location.href='index.html'">ok</button> 
+  
+
+</div>
+
+</body>
+<script>
+
+
+window.alert("Please turn on the volume of your device");
+//alert("Hello world!");  
+ 
+let controlledByTD = document.querySelector(".controlledByTD");
+let olga = document.getElementById('olga');
+  //create a synth and connect it to the main output (your speakers)
+const synth = new Tone.Synth().toDestination();
+
+// Source - https://stackoverflow.com/a/75248399
+// Posted by wittgenstein
+// Retrieved 2026-03-04, License - CC BY-SA 4.0
+
+// necessary for Safari
+synth.context.resume();
+
+
+
+
+function notification() {
+  if (Tone.context.state !== 'running') {
+        Tone.context.resume();
+    }
+olga.style.visibility = 'visible';  
+let randomNote = ["C4","F4","D4","G#5","C5"]    
+let i = Math.floor(Math.random() * randomNote.length);
+let r = randomNote[i];    
+synth.triggerAttackRelease(r, "16n");    
+}
+
+
+
+let ws = new WebSocket("ws://31.172.57.12:7071");
+
+ws.addEventListener("open", (event) => {
+        console.log("websocket opened");
+      });
+
+
+ws.addEventListener("message", (message) => {
+  if (message && message.data) {
+    if (message.data === "ping") {
+      console.log("got ping");
+      ws.send("pong");
+      return;
+    }
+    let data = JSON.parse(message.data);
+    if (data) {
+      if ("button1" in data) {
+      controlledByTD.value = data["button1"];
+ 
+      }
+
+    if (data.button == 1) {
+    notification();    
+    }else{
+    olga.style.visibility = "hidden";    
+    }
+
+    console.log("got data", data);
+
+    }
+  }
+  console.log("message", message);
+});      
+
+      ws.addEventListener("error", (error) => {
+        console.log("websocket closed");
+      });
+
+      ws.addEventListener("close", (event) => {
+        console.log("websocket closed");
+      });
+
+
+
+
+</script>
+</html>

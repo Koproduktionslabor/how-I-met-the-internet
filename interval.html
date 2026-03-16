@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>How I met the Internet</title>
+    <script src="http://unpkg.com/tone"></script>
+</head>
+
+<body>
+
+    <div id="olga" class="popup">
+        <h2>What does it matter for you?</h2>
+        <a id="continue" href="javascript:void(0)">continue</a>
+    </div>
+    
+    <div class="container">
+        <div style="padding:5px; margin-left: 20px; z-index: 0;">
+            <h2>
+               ...
+            </h2>
+        </div>
+    </div>
+
+</body>
+<script>
+    let controlledByTD = document.querySelector(".controlledByTD");
+    let olga = document.getElementById('olga');
+    //create a synth and connect it to the main output (your speakers)
+    const synth = new Tone.Synth().toDestination();
+
+    function notification() {
+        olga.style.visibility = 'visible';
+        let randomNote = ["C4", "F4", "D4", "G#5", "C5"]
+        let i = Math.floor(Math.random() * randomNote.length);
+        let r = randomNote[i];
+        synth.triggerAttackRelease(r, "16n");
+    }
+
+    const ws = new WebSocket(`ws://${window.location.host}`);
+
+    ws.addEventListener("open", (event) => {
+        console.log("websocket opened");
+    });
+
+    ws.addEventListener("message", (message) => {
+        if (message && message.data) {
+            if (message.data === "ping") {
+                console.log("got ping");
+                ws.send("pong");
+                return;
+            }
+            
+            let data = JSON.parse(message.data);
+            if (data) {
+                if ("button1" in data) {
+                    controlledByTD.value = data["button1"];
+                }
+                
+                if (data.button == 1) {
+                    notification();
+                }
+
+                console.log("got data", data);
+            }
+        }
+        console.log("message", message);
+    });
+
+    ws.addEventListener("error", (error) => {
+        console.log("websocket closed");
+    });
+
+    ws.addEventListener("close", (event) => {
+        console.log("websocket closed");
+    });
+
+    // Handle click locally - only affects this browser
+    document.getElementById('continue').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Optionally hide the popup before navigating
+        olga.style.visibility = "hidden";
+        // Navigate to the next page
+        window.location.href = 'prompt.html';
+    });
+
+</script>
+</html>

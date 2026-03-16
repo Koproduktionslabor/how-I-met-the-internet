@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="#" />
+  <link rel="stylesheet" href="style.css">
+  <title>How I met the Internet</title>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h3>Send me a notification</h3>
+    <input type="text" id="name" name="name" size="30" class="controllTDTextBox" />
+    <input type="submit" value="send" class="controllTDSubmit">
+
+  </div>
+  <script>
+
+    //let ws = new WebSocket("ws://192.168.0.36:7071");
+    const ws = new WebSocket(`ws://${window.location.host}`);
+
+    // Select the input box and submit button
+    const inputBox = document.querySelector('#name');
+    const submitButton = document.querySelector('.controllTDSubmit');
+
+
+
+    // Add event listener to the submit button
+    submitButton.addEventListener('click', function (event) {
+      // Prevent the default form submission behavior
+      event.preventDefault();
+
+      // Log the value of the input box
+      let input = inputBox.value;
+
+
+
+      console.log(input);
+      ws.send(JSON.stringify({ input }));
+      //ws.send(input);
+    });
+
+
+    ws.addEventListener("open", (event) => {
+      console.log("websocket opened");
+    });
+
+    ws.addEventListener("message", (message) => {
+      if (message.data == "ping") {
+        ws.send("pong");
+        return;
+      }
+
+      let data = JSON.parse(message.data);
+
+      console.log(data);
+    });
+
+    ws.addEventListener("error", (error) => {
+      console.log("websocket closed");
+    });
+
+    ws.addEventListener("cloase", (event) => {
+      console.log("websocket closed");
+    });
+  </script>
+</body>
+
+</html>

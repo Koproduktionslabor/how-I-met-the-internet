@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>How I met the Internet</title>
+  <script src="http://unpkg.com/tone"></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <div style="padding:5px; margin-left: 20px;">
+    <h2>
+      Thank you for connecting.
+      <br>
+      The performance will start soon.
+    </h2>
+    <h2>Please wait to the instructions to click on this <a href="interval.html">link</a></h2>
+</div>
+
+  </div>
+
+  <footer>
+    <p>built with the support of kolab.nrw</p>
+  </footer>
+</body>
+<script>
+
+
+
+
+
+
+
+  const ws = new WebSocket(`ws://${window.location.host}`);
+
+  ws.addEventListener("open", (event) => {
+    console.log("websocket opened");
+  });
+
+
+  ws.addEventListener("message", (message) => {
+    if (message && message.data) {
+      if (message.data === "ping") {
+        console.log("got ping");
+        ws.send("pong");
+        return;
+      }
+    }
+    console.log("message", message);
+  });
+
+  ws.addEventListener("error", (error) => {
+    console.log("websocket closed");
+  });
+
+  ws.addEventListener("close", (event) => {
+    console.log("websocket closed");
+  });
+
+
+
+</script>
+
+</html>
