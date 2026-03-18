@@ -19,3 +19,5 @@ Prototype for a performace from the artist Olga Karaseva with websockets and Tou
 http://localhost:7071/     (type it on the browser)
 
 http://yourWifiIpAddress:7071/    for remote clients
+
+### Based on https://github.com/Koproduktionslabor/websocketsTouchdesigner
